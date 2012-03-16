@@ -258,6 +258,7 @@ if (!class_exists("eralha_basket")){
 					}
 					if($_GET["action"] == "history"){
 						$output .= "History List";
+						//end
 						return $output;
 					}
 				}
