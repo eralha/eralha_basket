@@ -74,7 +74,12 @@ class carrinho{
 		function calcTotalCarrinho(){
 			$total = 0;
 			for($i = 0; $i < count($this->items); $i++){
-				$total += $this->items[$i][2] * $this->items[$i][1];
+				if(isset($this->items[$i][2])){
+					$total += $this->items[$i][2] * $this->items[$i][1];
+				}else{
+					$this->items[$i][2] = $this->getPrice($this->items[$i][0]);
+					$total += $this->items[$i][2] * $this->items[$i][1];
+				}
 			}
 
 			return $total;
@@ -82,6 +87,10 @@ class carrinho{
 
 		function getItemNum(){
 			return count($this->items);
+		}
+
+		function getItems(){
+			return $this->items;
 		}
 }
 

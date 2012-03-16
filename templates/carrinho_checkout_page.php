@@ -21,5 +21,8 @@
 		<div class="total">
 			{total}€
 		</div>
+
+		<input type="hidden" id="metodo" name="metodo" value="{metodo_form}" />
+		<input type="hidden" id="txtMsg" name="txtMsg" value="{msg_form}" />
 	</form>
 </div>

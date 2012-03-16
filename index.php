@@ -51,10 +51,11 @@ if (!class_exists("eralha_basket")){
 
 			$sqlTblImages = "CREATE TABLE ".$table_produtos."
 			(
-				`idProduto` INT(8) NOT NULL AUTO_INCREMENT, 
+				`idRegisto` INT(8) NOT NULL AUTO_INCREMENT, 
+				`idProduto` INT(8) ,
 				`idEncomenda` INT(8) NOT NULL, 
 				`iQuantidade` INT(8) NOT NULL, 
-				PRIMARY KEY  (`idProduto`)
+				PRIMARY KEY  (`idRegisto`)
 			);";
 
 			require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
@@ -102,8 +103,8 @@ if (!class_exists("eralha_basket")){
 			global $wpdb;
 			global $user_ID;
 
-			$table_galerias = $wpdb->prefix.$this->optionsName."_gallery";
-			$table_images = $wpdb->prefix.$this->optionsName."_images";
+			$table_encomendas = $wpdb->prefix.$this->optionsName."_encomendas";
+			$table_produtos = $wpdb->prefix.$this->optionsName."_produtos";
 
 			if(current_user_can('administrator') || current_user_can('editor')){
 				$image = $wpdb->get_results($wpdb->prepare("SELECT * FROM ".$table_images." WHERE idImagem = '".$imageID."' "), ARRAY_A);
@@ -156,7 +157,8 @@ if (!class_exists("eralha_basket")){
 		function addContent($content=''){
 			global $wpdb;
 
-			$table_images = $wpdb->prefix.$this->optionsName."_images";
+			$table_encomendas = $wpdb->prefix.$this->optionsName."_encomendas";
+			$table_produtos = $wpdb->prefix.$this->optionsName."_produtos";
 
 			//$pluginDir = str_replace("http://".$_SERVER['HTTP_HOST']."", "", plugin_dir_url( __FILE__ ));
 			$pluginDir = str_replace("", "", plugin_dir_url( __FILE__ ));
@@ -218,11 +220,46 @@ if (!class_exists("eralha_basket")){
 					//SET ENC ON DB CLEAR AND SHOW MESSAGE
 					$finishMsg = file_get_contents($pluginDir."templates/carrinho_checkout_finish_msg.php");
 
+					$wpdb->insert($table_encomendas, 
+						array(
+						'iData'=>time(), 
+						'iUserId'=> get_current_user_id(), 
+						'iTotal'=> $basket->calcTotalCarrinho(), 
+						'vchMetodoPagamento'=> $wpdb->prepare($_POST["metodo"]), 
+						'vchEstadoEncomenda'=>'open', 
+						'vchComentario'=> $wpdb->prepare($_POST["txtMsg"])
+					));
+
+					$encId = $wpdb->insert_id;
+					$items = $basket->getItems();
+
+					//insert items
+						foreach($items as $item){
+							$wpdb->insert($table_produtos, 
+								array(
+								'idProduto'=>$item[0], 
+								'idEncomenda'=>$encId, 
+								'iQuantidade'=>$item[1]
+							));
+						}
+
 					$basket->clearAllItems();
 
 					$output .= $finishMsg;
 
 					return $output;
+				}
+			
+			//INTERFACE - ACTION ----- LIST OPEN ORDERS
+				if(isset($_GET["action"])){
+					if($_GET["action"] == "orders"){
+						$output .= "Order List";
+						return $output;
+					}
+					if($_GET["action"] == "history"){
+						$output .= "History List";
+						return $output;
+					}
 				}
 			
 			//ACTION ----- CHECKOUT
@@ -234,7 +271,8 @@ if (!class_exists("eralha_basket")){
 					$output .= str_replace("{content}", $list, $checkoutTemp);
 					$output = str_replace("{total}", $basket->calcTotalCarrinho(), $output);
 					$output = str_replace("{metodo}", "Transferencia bancária", $output);
-					
+					$output = str_replace("{metodo_form}", $_POST["metodo"], $output);
+					$output = str_replace("{msg_form}", $_POST["txtMsg"], $output);
 
 					if(is_user_logged_in()){
 						$userdata = file_get_contents($pluginDir."templates/carrinho_checkout_user_data_login.php");
