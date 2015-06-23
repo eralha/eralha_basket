@@ -1,25 +1,24 @@
 
-<div class="basketContainer">
-	<form method="POST" action="/basket/">
+<div class="basketContainer clearfix">
+	<form method="POST" action="{theme_url}/basket/">
 		<div class="basketItemList">
 			{content}
 		</div>
-		<div class="pagamento">
-			<div>Metodo de Pagamento</div>
-			<label for="m_transf">Transferência Bancária:</label><input type="radio" id="m_transf" name="metodo" value="transferencia" checked/>
-			<label for="m_transf">Easy pay:</label><input type="radio" id="m_easypay" name="metodo" value="easy pay" />
+		<div class="total">
+			Total Carrinho: {total}€
 		</div>
-		<div class="msg">
-			<div>Menssagem</div>
-			<smal>Se tem algo a dizer sobre a encomenda, ou alguma dúvida acerca do serviço deixe aqui o seu comentário.</small>
+		<div class="pagamento">
+			<div class="bold">Metodo de Pagamento</div>
+			{pagamentos}
+		</div>
+		<div class="msg clearfix">
+			<div class="bold">Menssagem</div>
+			<div class="small">Observações/dúvidas acerca do serviço deixe aqui o seu comentário.</div>
 			<textarea id="txtMsg" name="txtMsg"></textarea>
 		</div>
-		<div class="formButtons">
+		<div class="formButtons clearfix">
 			<input type="submit" id="update" name="update"  value="Actualizar o carrinho"/>
 			<input type="submit" id="checkout" name="checkout"  value="Finalizar a Compra"/>
-		</div>
-		<div class="total">
-			{total}€
 		</div>
 	</form>
 </div>

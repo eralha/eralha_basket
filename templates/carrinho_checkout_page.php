@@ -1,13 +1,16 @@
 
 <div class="basketContainer">
-	<form method="POST" action="/basket/">
+	<form method="POST" action="{theme_url}/basket/">
 		<div class="basketItemList">
-			Artigos no carrinho
-			<blockquote>
+			<b>Confirme todos os dados da encomenda</b><br /><br />
+			
 				{content}
 			</blockquote>
 		</div>
-		<br /><br />
+		<div class="total">
+			Total Carrinho: {total}€
+		</div>
+
 		<div class="pagamento">
 			<div><b>Metodo de Pagamento</b></div>
 			{metodo}
@@ -18,10 +21,7 @@
 		{msg}
 		<br /><br />
 		{controls}
-		<div class="total">
-			{total}€
-		</div>
-
+		
 		<input type="hidden" id="metodo" name="metodo" value="{metodo_form}" />
 		<input type="hidden" id="txtMsg" name="txtMsg" value="{msg_form}" />
 	</form>
